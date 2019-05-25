@@ -1,8 +1,8 @@
 import serial
 from serial import Serial
-from time import sleep
-import time
-import re
+#from time import sleep
+#import time
+#import re
 import os
 import base64
 
@@ -17,10 +17,11 @@ ser_receive = serial.Serial(
 )
 receive = ''
 mes_receive = ser_receive.readline()
-os.remove("imageToSave.png")
-fh = open("imageToSave.png", "ab")
-while not(b'end' in mes_receive):        
-    if(mes_receive != b''):
+if os.path.isfile("imageToSave.png"):
+        os.remove("imageToSave.png")
+while not(b'end' in mes_receive):    
+    fh = open("imageToSave.png", "ab")
+    if mes_receive != b'':
         a = mes_receive.decode()
         b = a[121:]
         c = b.encode()
