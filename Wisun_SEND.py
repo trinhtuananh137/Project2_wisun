@@ -22,13 +22,13 @@ def d2h(x):
 image_path = "./face.jpg"
 imageFile = open(image_path, "rb")
 bstr = base64.b64encode(imageFile.read())
-#_str = str.decode()
+_str = bstr.decode()
 imageFile.close()
-_len  = len(bstr)
+_len  = len(_str)
 m = int(_len/200) * 200
 send = []
-for i in range(0,m + 200,200):
-    send.append(bstr[0 + i:200 +i])
+for i in range(0,m + 1,200):
+    send.append(_str[0 + i:200 +i])
 
 ser_send = serial.Serial(    
     port='COM5',
@@ -37,15 +37,22 @@ ser_send = serial.Serial(
     parity = serial.PARITY_NONE,
     bytesize=serial.EIGHTBITS,
     rtscts = True,
-    #dsrdtr = False
+    dsrdtr = False
 )
 
+# cmd = "SKSENDTO 1 "+ CORDIP +" 0E1A 1 0005 begin\r\n"
+# ser_send.write(cmd.encode('ascii'))
+
 for s in send:
-    l = d2h(len(s))
-    cmd = "SKSENDTO 1 "+ CORDIP +" 0E1A 1 " + l + " "
-    ser_send.write(cmd.encode('ascii') + s + b'\r\n') 
+    l = ''
+    l = l + d2h(len(s))
+    cmd = "SKSENDTO 1 "+ CORDIP +" 0E1A 1 " + l + " " + s + '\r\n'
+    ser_send.write(cmd.encode('ascii')) 
     mes_send = ser_send.readline()    
     while not(b'OK' in mes_send):
         mes_send = ser_send.readline()
 cmd = "SKSENDTO 1 "+ CORDIP +" 0E1A 1 0003 end\r\n"
 ser_send.write(cmd.encode('ascii'))
+mes_send = ser_send.readline()    
+while not(b'OK' in mes_send):
+    mes_send = ser_send.readline()
