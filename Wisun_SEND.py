@@ -18,16 +18,17 @@ def d2h(x):
         _str = "0" + str
     return(_str)
 def Wisun_SEND(image_path):
-    while cv2.waitKey(30)&0xFF != ord('q'):
-        if not(os.path.exists(image_path)):
-            continue
-        try:
-            imageFile = open(image_path, "rb")
-        except OSError:
-            continue
+    if (os.path.exists(image_path)):
+        #if not(os.path.exists(image_path)):
+            #continue
+        #try:
+            #imageFile = open(image_path, "rb")
+        #except OSError:
+            #continue
+	imageFile = open(image_path,"rb")
         _str = base64.b64encode(imageFile.read())
         ser_send = serial.Serial(    
-            port='COM5',
+            port='/dev/ttyUSB0',
             baudrate=115200,
             timeout = 10,
             parity = serial.PARITY_NONE,
@@ -44,21 +45,28 @@ def Wisun_SEND(image_path):
         send = []
         for i in range(0,m + 1,200):
             send.append(_str[0 + i:200 +i])
-        for s in send:
-            l = ''
-            l = l + d2h(len(s))
-            cmd = "SKSENDTO 1 "+ CORDIP +" 0E1A 1 " + l
-            ser_send.write(cmd.encode('ascii')  + b" " + s + b'\r\n') 
-            mes_send = ser_send.readline()    
-            while not(b'OK' in mes_send):
-                mes_send = ser_send.readline()
-        cmd = "SKSENDTO 1 "+ CORDIP +" 0E1A 1 0003 end\r\n"
-        ser_send.write(cmd.encode('ascii'))
+	cmd = "SKSENDTO 1 " + CORDIP + " 0E1A 1 0005 begin\r\n"
+	ser_send.write(cmd.encode('ascii'))
+	mes_send = ser_send.readline()
+	while not (b"OK" in mes_send):
+	    mes_send = ser_send.readline()
+    for s in send:
+        l = ''
+        l = l + d2h(len(s))
+        cmd = "SKSENDTO 1 "+ CORDIP +" 0E1A 1 " + l
+        ser_send.write(cmd.encode('ascii')  + b" " + s + b'\r\n') 
         mes_send = ser_send.readline()    
         while not(b'OK' in mes_send):
             mes_send = ser_send.readline()
-        ser_send.close()
-        imageFile.close()
+    cmd = "SKSENDTO 1 "+ CORDIP +" 0E1A 1 0003 end\r\n"
+    ser_send.write(cmd.encode('ascii'))
+    mes_send = ser_send.readline()    
+    while not(b'OK' in mes_send):
+        mes_send = ser_send.readline()
+    ser_send.close()
+    imageFile.close()
+    return
 
 
         
+
