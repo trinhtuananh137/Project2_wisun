@@ -1,0 +1,36 @@
+int data;  
+void setup() {  
+    Serial.begin(9600);  
+    pinMode(13, OUTPUT);  
+    pinMode(10, OUTPUT); 
+}  
+void loop() {  
+    if (Serial.available()) {  
+        data = Serial.read();  
+        if (data == 'A') { 
+           digitalWrite(13, HIGH);  
+            delay(500);
+            digitalWrite(13, LOW); 
+            delay(500);
+            digitalWrite(13, HIGH);  
+            delay(5000);
+            digitalWrite(13, LOW); 
+               
+        } else {  
+            digitalWrite(13, LOW);  
+            if (data == 'B') { 
+           digitalWrite(10, HIGH);  
+            delay(500);
+            digitalWrite(10, LOW); 
+            delay(500);
+            digitalWrite(10, HIGH);  
+            delay(5000);
+            digitalWrite(10, LOW); 
+               
+        } else {  
+            digitalWrite(10, LOW);  
+            
+        }  
+        }  
+    }  
+}
